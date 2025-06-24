@@ -1,4 +1,4 @@
-import 'package:brain_match/screens/quiz.dart';
+import 'package:brain_match/ui/screens/quiz.dart';
 import 'package:flutter/material.dart';
 import '../widgets/nav_bar.dart';
 import 'home.dart';
