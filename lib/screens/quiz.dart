@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ScanPage extends StatelessWidget {
+class QuizPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

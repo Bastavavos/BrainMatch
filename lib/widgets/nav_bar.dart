@@ -27,8 +27,8 @@ class NavBar extends StatelessWidget {
               label: 'Home',
             ),
             NavigationDestination(
-              icon: Icon(Icons.document_scanner),
-              label: 'Scan',
+              icon: Icon(Icons.play_arrow),
+              label: 'Play',
             ),
             NavigationDestination(
               icon: Icon(Icons.account_circle),

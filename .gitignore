@@ -32,5 +32,3 @@ linux/flutter/ephemeral/
 # Web
 web/.dart_tool/
 web/build/
-
-build/

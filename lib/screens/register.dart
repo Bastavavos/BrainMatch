@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../models/user.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   String? _errorMessage;
 
-  Future<void> _login() async {
+  Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -25,13 +25,14 @@ class _LoginPageState extends State<LoginPage> {
       _errorMessage = null;
     });
 
-    final url = Uri.parse("http://192.168.1.66:3000/api/user/login");
+    final url = Uri.parse("http://192.168.1.66:3000/api/user/register");
 
     try {
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
+          "username" : _usernameController.text.trim(),
           "email": _emailController.text.trim(),
           "password": _passwordController.text.trim(),
         }),
@@ -87,6 +88,16 @@ class _LoginPageState extends State<LoginPage> {
                 key: _formKey,
                 child: Column(
                   children: [
+                    //username
+                    TextFormField(
+                      controller: _usernameController,
+                      decoration: _buildInputDecoration('Nom :'),
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Veuillez entrer un nom'
+                          : null,
+                    ),
+                    const SizedBox(height: 16),
+
                     // Email
                     TextFormField(
                       controller: _emailController,
@@ -123,22 +134,12 @@ class _LoginPageState extends State<LoginPage> {
               // Boutons
               Column(
                 children: [
-                  _buildButton(
-                    context,
-                    label: _isLoading ? 'Connexion...' : 'Connexion',
-                    icon: Icons.power_settings_new,
-                    onPressed: _isLoading ? null : _login,
-                  ),
                   const SizedBox(height: 16),
                   _buildButton(
                     context,
-                    label: 'Inscription',
+                    label: 'Valider',
                     icon: Icons.group_add,
-                    onPressed: _isLoading
-                        ? null
-                        : () {
-                      Navigator.pushNamed(context, '/register');
-                    },
+                    onPressed: _isLoading ? null : _register,
                   ),
                 ],
               ),

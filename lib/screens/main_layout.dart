@@ -1,4 +1,4 @@
-import 'package:brain_match/screens/scan.dart';
+import 'package:brain_match/screens/quiz.dart';
 import 'package:flutter/material.dart';
 import '../widgets/nav_bar.dart';
 import 'home.dart';
@@ -14,7 +14,7 @@ class _MainLayoutState extends State<MainLayout> {
 
   final List<Widget> _pages = [
     HomePage(),
-    ScanPage(),
+    QuizPage(),
     UserProfilePage()
   ];
 
