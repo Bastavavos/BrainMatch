@@ -1,4 +1,5 @@
-import 'package:brain_match/ui/screens/quiz.dart';
+import 'package:brain_match/ui/screens/quiz_page.dart';
+import 'package:brain_match/ui/screens/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import '../widgets/nav_bar.dart';
 import 'home.dart';
@@ -14,7 +15,8 @@ class _MainLayoutState extends State<MainLayout> {
 
   final List<Widget> _pages = [
     HomePage(),
-    QuizPage(),
+    QuizQuestionPage(),
+    // QuizScreen(),
     UserProfilePage()
   ];
 

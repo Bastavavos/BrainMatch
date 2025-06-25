@@ -20,7 +20,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   Future<void> _fetchApi() async {
     try {
-      final response = await http.get(Uri.parse("http://192.168.1.66:3000/api/user/all"));
+      final response = await http.get(Uri.parse("http://192.168.1.99:3000/api/user"));
       setState(() {
         _responseBody = response.body;
       });
