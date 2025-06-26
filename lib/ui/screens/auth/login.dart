@@ -1,17 +1,22 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class LoginPage extends StatefulWidget {
+import '../../provider/user_provider.dart';
+
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _identifierController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   String? _errorMessage;
@@ -24,14 +29,13 @@ class _LoginPageState extends State<LoginPage> {
       _errorMessage = null;
     });
 
-    final url = Uri.parse("http://192.168.1.99:3000/api/user/login");
-
     try {
+      final baseUrl = dotenv.env['API_KEY'];
       final response = await http.post(
-        url,
+        Uri.parse("$baseUrl/user/login"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
-          "email": _emailController.text.trim(),
+          "identifier": _identifierController.text.trim(),
           "password": _passwordController.text.trim(),
         }),
       );
@@ -39,10 +43,18 @@ class _LoginPageState extends State<LoginPage> {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // Connexion réussie
+        final user = {
+          'userId': data['userId'], // ← pour cohérence avec /user/{id}
+          'username': data['username'],
+          'email': data['email'],
+          'token': data['token'],
+        };
+        if (kDebugMode) {
+          print("$user");
+        }
+        ref.read(userProvider.notifier).state = user;
         Navigator.pushReplacementNamed(context, '/main');
       } else {
-        // Erreur (ex: mauvais identifiants)
         setState(() {
           _errorMessage = data["message"] ?? "Erreur de connexion.";
         });
@@ -88,8 +100,8 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     // Email
                     TextFormField(
-                      controller: _emailController,
-                      decoration: _buildInputDecoration('Email :'),
+                      controller: _identifierController,
+                      decoration: _buildInputDecoration('Identifier :'),
                       validator: (value) => value == null || value.isEmpty
                           ? 'Veuillez entrer un email'
                           : null,

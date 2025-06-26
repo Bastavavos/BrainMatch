@@ -6,15 +6,15 @@ class QuizQuestionPage extends StatefulWidget {
 }
 
 class _QuizQuestionPageState extends State<QuizQuestionPage> {
-  final String questionText = "Quelle est la capitale de la France ?";
+  final String questionText = "Qui est phil le fière ?";
   final List<String> answers = [
-    "Berlin",
-    "Madrid",
-    "Paris",
-    "Rome",
+    "Dounia",
+    "Strappazon",
+    "Ronald",
+    "McDonald",
   ];
   String? selectedAnswer;
-  String correctAnswer = "Paris";
+  String correctAnswer = "Strappazon";
 
   void _selectAnswer(String answer) {
     if (selectedAnswer == null) {

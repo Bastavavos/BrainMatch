@@ -1,25 +1,31 @@
 // import 'package:brain_match/ui/screens/login.dart';
 // import 'package:brain_match/ui/screens/main_layout.dart';
 // import 'package:brain_match/ui/screens/register.dart';
-import 'package:brain_match/ui/screens/login.dart';
+import 'package:brain_match/ui/screens/auth/login.dart';
 import 'package:brain_match/ui/screens/main_layout.dart';
 import 'package:brain_match/ui/screens/quiz_page.dart';
 import 'package:brain_match/ui/screens/quiz_screen.dart';
-import 'package:brain_match/ui/screens/register.dart';
+import 'package:brain_match/ui/screens/auth/register.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:brain_match/ui/screens/login.dart';
-import 'package:brain_match/ui/screens/register.dart';
+import 'package:brain_match/ui/screens/auth/register.dart';
 import 'package:brain_match/ui/screens/main_layout.dart';
 import 'package:brain_match/ui/screens/quiz_screen.dart';
 import 'package:brain_match/ui/screens/confirmation_mode.dart'; // <-- à créer
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
-  runApp(ProviderScope(child: MyApp())); // <-- Important pour Riverpod
+// void main() {
+//   runApp(ProviderScope(child: MyApp()));
+//   dotenv.load(fileName: ".env");
+// }
+
+Future<void> main() async {
+  dotenv.load(fileName: ".env");
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

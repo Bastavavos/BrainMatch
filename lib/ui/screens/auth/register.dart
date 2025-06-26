@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -25,11 +26,10 @@ class _RegisterPageState extends State<RegisterPage> {
       _errorMessage = null;
     });
 
-    final url = Uri.parse("http://192.168.1.66:3000/api/user/register");
-
     try {
+      final baseUrl = dotenv.env['API_KEY'];
       final response = await http.post(
-        url,
+        Uri.parse("$baseUrl/user/register"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "username" : _usernameController.text.trim(),
@@ -41,10 +41,8 @@ class _RegisterPageState extends State<RegisterPage> {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // Connexion réussie
-        Navigator.pushReplacementNamed(context, '/main');
+        Navigator.pushReplacementNamed(mounted as BuildContext, '/main');
       } else {
-        // Erreur (ex: mauvais identifiants)
         setState(() {
           _errorMessage = data["message"] ?? "Erreur de connexion.";
         });
