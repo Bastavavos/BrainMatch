@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class RegisterPage extends StatefulWidget {
+import '../../provider/user_provider.dart';
+
+class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  ConsumerState<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends ConsumerState<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -28,23 +31,51 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       final baseUrl = dotenv.env['API_KEY'];
-      final response = await http.post(
+
+      // Étape 1 : enregistrement
+      final registerResponse = await http.post(
         Uri.parse("$baseUrl/user/register"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
-          "username" : _usernameController.text.trim(),
+          "username": _usernameController.text.trim(),
           "email": _emailController.text.trim(),
           "password": _passwordController.text.trim(),
         }),
       );
 
-      final data = jsonDecode(response.body);
+      if (registerResponse.statusCode == 201) {
+        // Étape 2 : login auto
+        final loginResponse = await http.post(
+          Uri.parse("$baseUrl/user/login"),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "identifier": _emailController.text.trim(), // ou username, selon ton backend
+            "password": _passwordController.text.trim(),
+          }),
+        );
 
-      if (response.statusCode == 200) {
-        Navigator.pushReplacementNamed(mounted as BuildContext, '/main');
+        final loginData = jsonDecode(loginResponse.body);
+
+        if (loginResponse.statusCode == 200) {
+          // Tu dois avoir accès à ref pour modifier userProvider
+          if (!mounted) return;
+          final user = {
+            'userId': loginData['userId'],
+            'username': loginData['username'],
+            'email': loginData['email'],
+            'token': loginData['token'],
+          };
+          ref.read(userProvider.notifier).state = user;
+          Navigator.pushReplacementNamed(context, '/main');
+        } else {
+          setState(() {
+            _errorMessage = loginData['message'] ?? 'Échec de la connexion après inscription.';
+          });
+        }
       } else {
+        final data = jsonDecode(registerResponse.body);
         setState(() {
-          _errorMessage = data["message"] ?? "Erreur de connexion.";
+          _errorMessage = data['message'] ?? 'Échec de l’inscription.';
         });
       }
     } catch (e) {

@@ -66,35 +66,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-
-
-
-  // Widget _buildCard(BuildContext context, String title, Color color,
-  //     String routeName) {
-  //   return InkWell(
-  //     onTap: () {
-  //       Navigator.pushNamed(context, routeName);
-  //     },
-  //     child: Card(
-  //       color: color,
-  //       shape: RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.circular(15.0),
-  //       ),
-  //       elevation: 4,
-  //       child: Container(
-  //         width: 300,
-  //         height: 80,
-  //         alignment: Alignment.center,
-  //         child: Text(
-  //           title,
-  //           style: TextStyle(
-  //             color: Colors.black,
-  //             fontSize: 20,
-  //             fontWeight: FontWeight.normal,
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 }
