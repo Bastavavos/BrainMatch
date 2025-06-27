@@ -22,11 +22,11 @@ class NavBar extends StatelessWidget {
           indicatorColor: Colors.blue,
           destinations: const [
             NavigationDestination(
-              selectedIcon: Icon(Icons.home),
-              icon: Icon(Icons.home_outlined),
-              label: 'Home',
+              icon: Icon(Icons.leaderboard_rounded),
+              label: 'LeaderBoard',
             ),
             NavigationDestination(
+              selectedIcon: Icon(Icons.play_arrow),
               icon: Icon(Icons.play_arrow),
               label: 'Play',
             ),

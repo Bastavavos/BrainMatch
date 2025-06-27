@@ -3,8 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../../provider/user_provider.dart';
+import '../../../provider/user_provider.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -89,90 +88,90 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Logo
-              Center(
-                child: Column(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: SizedBox(
+            height: screenHeight * 0.95,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Logo et Formulaire
+                Column(
                   children: [
+                    const SizedBox(height: 32),
                     Image.asset(
                       'assets/images/himmel.png',
                       height: 150,
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
+
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: _usernameController,
+                            decoration: _buildInputDecoration('Nom :'),
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Veuillez entrer un nom'
+                                : null,
+                          ),
+                          const SizedBox(height: 16),
+
+                          TextFormField(
+                            controller: _emailController,
+                            decoration: _buildInputDecoration('Email :'),
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Veuillez entrer un email'
+                                : null,
+                          ),
+                          const SizedBox(height: 16),
+
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: true,
+                            decoration: _buildInputDecoration('Mot de passe :'),
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Veuillez entrer un mot de passe'
+                                : null,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    if (_errorMessage != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          _errorMessage!,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
                   ],
                 ),
-              ),
 
-              // Formulaire
-              Form(
-                key: _formKey,
-                child: Column(
+                // Bouton
+                Column(
                   children: [
-                    //username
-                    TextFormField(
-                      controller: _usernameController,
-                      decoration: _buildInputDecoration('Nom :'),
-                      validator: (value) => value == null || value.isEmpty
-                          ? 'Veuillez entrer un nom'
-                          : null,
+                    _buildRoundedSmallButton(
+                      label: _isLoading ? 'Chargement...' : 'Valider',
+                      icon: Icons.group_add,
+                      onPressed: _isLoading ? null : _register,
                     ),
-                    const SizedBox(height: 16),
-
-                    // Email
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: _buildInputDecoration('Email :'),
-                      validator: (value) => value == null || value.isEmpty
-                          ? 'Veuillez entrer un email'
-                          : null,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Password
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: _buildInputDecoration('Mot de passe :'),
-                      validator: (value) => value == null || value.isEmpty
-                          ? 'Veuillez entrer un mot de passe'
-                          : null,
-                    ),
+                    const SizedBox(height: 24),
                   ],
                 ),
-              ),
-
-              const SizedBox(height: 32),
-
-              if (_errorMessage != null)
-                Text(
-                  _errorMessage!,
-                  style: const TextStyle(color: Colors.red),
-                ),
-
-              const SizedBox(height: 16),
-
-              // Boutons
-              Column(
-                children: [
-                  const SizedBox(height: 16),
-                  _buildButton(
-                    context,
-                    label: 'Valider',
-                    icon: Icons.group_add,
-                    onPressed: _isLoading ? null : _register,
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -194,24 +193,28 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     );
   }
 
-  Widget _buildButton(BuildContext context,
-      {required String label,
-        required IconData icon,
-        required VoidCallback? onPressed}) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.deepPurple.shade100,
-          foregroundColor: Colors.black,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          elevation: 4,
+  Widget _buildRoundedSmallButton({
+    required String label,
+    required IconData icon,
+    required VoidCallback? onPressed,
+  }) {
+    return Center(
+      child: SizedBox(
+        width: 200,
+        child: ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.deepPurple.shade100,
+            foregroundColor: Colors.black,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            elevation: 3,
+          ),
+          icon: Icon(icon),
+          label: Text(label),
+          onPressed: onPressed,
         ),
-        icon: Icon(icon),
-        label: Text(label),
-        onPressed: onPressed,
       ),
     );
   }

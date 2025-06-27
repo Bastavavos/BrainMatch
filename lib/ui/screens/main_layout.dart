@@ -1,9 +1,9 @@
 import 'package:brain_match/ui/screens/quiz_page.dart';
-import 'package:brain_match/ui/screens/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import '../widgets/nav_bar.dart';
-import 'home.dart';
-import 'user_profile.dart';
+import 'main/leaderboard.dart';
+import 'main/selection_mode.dart';
+import 'main/user_profile.dart';
 
 class MainLayout extends StatefulWidget {
   @override
@@ -11,12 +11,11 @@ class MainLayout extends StatefulWidget {
 }
 
 class _MainLayoutState extends State<MainLayout> {
-  int _currentIndex = 0;
+  int _currentIndex = 1;
 
   final List<Widget> _pages = [
-    HomePage(),
-    QuizQuestionPage(),
-    // QuizScreen(),
+    LeaderboardScreen(),
+    SelectionModePage(),
     UserProfilePage()
   ];
 

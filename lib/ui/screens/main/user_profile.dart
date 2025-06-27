@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-
-import '../provider/user_provider.dart';
+import '../../../provider/user_provider.dart';
 
 class UserProfilePage extends ConsumerStatefulWidget {
   const UserProfilePage({super.key});
@@ -87,7 +86,6 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
         final data = jsonDecode(response.body);
         setState(() {
           _userData = data;
-          // _userData = jsonDecode(response.body);
           _isLoading = false;
         });
         final friendIds = data['friends'] ?? [];
@@ -154,9 +152,19 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
               ),
               child: CircleAvatar(
                 radius: 60,
-                backgroundImage: NetworkImage(pictureUrl),
-                onBackgroundImageError: (_, __) => const Icon(Icons.error),
+                backgroundColor: Colors.deepPurple.shade100,
+                backgroundImage: _userData!['picture'] != null && _userData!['picture'] != ''
+                    ? NetworkImage(_userData!['picture'])
+                    : null,
+                child: (_userData!['picture'] == null || _userData!['picture'] == '')
+                    ? const Icon(Icons.person, size: 48, color: Colors.deepPurple)
+                    : null,
               ),
+              // child: CircleAvatar(
+              //   radius: 60,
+              //   backgroundImage: NetworkImage(pictureUrl),
+              //   onBackgroundImageError: (_, __) => const Icon(Icons.error),
+              // ),
             ),
             const SizedBox(height: 24),
 
@@ -222,7 +230,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Amis",
+                    "Friends",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   ),
                 ),
@@ -231,11 +239,20 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                   children: _friendsData.map((friend) {
                     return ListTile(
                       leading: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          friend['picture'] ??
-                              'https://exemple.com/default.jpg',
-                        ),
+                        backgroundColor: Colors.deepPurple.shade100,
+                        backgroundImage: friend['picture'] != null && friend['picture'] != ''
+                            ? NetworkImage(friend['picture'])
+                            : null,
+                        child: (friend['picture'] == null || friend['picture'] == '')
+                            ? const Icon(Icons.person, color: Colors.deepPurple)
+                            : null,
                       ),
+                      // leading: CircleAvatar(
+                      //   backgroundImage: NetworkImage(
+                      //     friend['picture'] ??
+                      //         'https://exemple.com/default.jpg',
+                      //   ),
+                      // ),
                       title: Text(friend['username']),
                     );
                   }).toList(),
@@ -245,23 +262,49 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
 
             const SizedBox(height: 32),
 
-            // Déconnexion ou autre bouton (optionnel)
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple.shade100,
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              icon: const Icon(Icons.logout),
+              label: const Text("Changer de compte"),
+              onPressed: () async {
+                final baseUrl = dotenv.env['API_KEY'];
+                final user = ref.read(userProvider);
+                final token = user?['token'];
 
-            // ElevatedButton.icon(
-            //   style: ElevatedButton.styleFrom(
-            //     backgroundColor: Colors.deepPurple.shade100,
-            //     foregroundColor: Colors.black,
-            //     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            //     shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(12)),
-            //   ),
-            //   icon: const Icon(Icons.logout),
-            //   label: const Text("Déconnexion"),
-            //   onPressed: () {
-            //     ref.read(userProvider.notifier).state = null;
-            //     Navigator.pushReplacementNamed(context, '/login');
-            //   },
-            // ),
+                if (token != null) {
+                  try {
+                    final response = await http.post(
+                      Uri.parse("$baseUrl/user/logout"),
+                      headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer $token",
+                      },
+                    );
+
+                    if (kDebugMode) {
+                      print("Logout status: ${response.statusCode}");
+                    }
+                  } catch (e) {
+                    if (kDebugMode) {
+                      print("Erreur lors de la déconnexion : $e");
+                    }
+                  }
+                }
+                ref.read(userProvider.notifier).state = null;
+                if (context.mounted) {
+                  Navigator.pushReplacementNamed(context, '/');
+                }
+              },
+            ),
+
+            const SizedBox(height: 32),
           ],
         ),
       ),
